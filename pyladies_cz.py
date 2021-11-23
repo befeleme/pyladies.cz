@@ -119,7 +119,9 @@ def gdpr():
 
 @app.route('/v1/')
 @app.route('/v1/<path:path>')
-def v1(path='index.html'):
+def v1(path):
+    if path.endswith('/'):
+        path += 'index.html'
     if path in REDIRECTS:
         return redirect(REDIRECTS[path])
     if path[-1] == '/':
