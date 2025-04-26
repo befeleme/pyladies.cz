@@ -20,7 +20,7 @@ import yaml
 import markdown
 import markupsafe
 
-# from elsa import cli
+from freezeyt import freeze
 
 app = Flask('pyladies_cz')
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -323,14 +323,11 @@ for directory, pages in REDIRECTS_DATA['naucse-lessons'].items():
 ##########
 ## Freezer
 
-# freezer = Freezer(app)
-
 app.config['SERVER_NAME'] = 'pyladies.cz'
 
 def start_hook():
     print('start hook called')
 
-# @freezer.register_generator
 def v1_generator(app):
     with app.app_context():
         IGNORE = ['*.aux', '*.out', '*.log', '*.scss', '.travis.yml', '.gitignore']
@@ -348,13 +345,11 @@ def v1_generator(app):
 
 OLD_CITIES = 'praha', 'brno', 'ostrava'
 
-# @freezer.register_generator
 def course_redirect(app):
     with app.app_context():
         for city in OLD_CITIES:
             yield url_for('course_redirect', city=city)
 
-# @freezer.register_generator
 def info_redirect(app):
     with app.app_context():
         for city in OLD_CITIES:
@@ -380,5 +375,6 @@ def get_css_links(page_content, base_url, headers):
         page_content, base_url, headers)
 
 if __name__ == '__main__':
-    from elsa import cli
-    cli(app, freezer=freezer, base_url='http://pyladies.cz')
+    with open('freezeyt.yaml') as f:
+        config = yaml.safe_load(f)
+    freeze(app, config)
